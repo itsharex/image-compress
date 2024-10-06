@@ -27,6 +27,8 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Setup pnpm
       #   uses: pnpm/action-setup@v4
