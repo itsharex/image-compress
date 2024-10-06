@@ -1,47 +1,60 @@
-import { useEffect, useState } from 'react';
-import { ConfigProvider, theme } from 'antd';
-import { invoke } from '@tauri-apps/api/tauri';
-import { listen } from '@tauri-apps/api/event'
+import { ConfigProvider, theme as antdTheme } from 'antd';
 
 import useSettings from '@/hooks/useSettings';
 import EmptyView from '@/components/EmptyView';
 import ImageList from '@/components/ImageList';
-import { ImageInfo } from './types';
+import { useEffect, useState } from 'react';
+import Header from './components/Header';
 
 function App() {
   const { settings } = useSettings();
-  const [imageFiles, setImageFiles] = useState<ImageInfo[]>([]);
+  const [theme, setTheme] = useState(settings.theme);
 
   useEffect(() => {
-    let cancelFn: () => void;
-    listen('tauri://file-drop', async (event) => {
-      console.log('File dropped:', event);
-      const imageFiles: ImageInfo[] = await invoke('read_image_files', { filePaths: event.payload as string[] })
-      console.log('imageFiles:', imageFiles)
-      setImageFiles(imageFiles)
-    }).then(fn => cancelFn = fn);
-    return () => cancelFn?.();
-  }, []);
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (settings.theme === 'system') {
+        const newTheme = e.matches ? 'dark' : 'light';
+        setTheme(newTheme);
+      }
+    };
+
+    if (settings.theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const initialTheme = mediaQuery.matches ? 'dark' : 'light';
+      setTheme(initialTheme);
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+
+      return () => {
+        mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      };
+    } else {
+      setTheme(settings.theme);
+    }
+  }, [settings.theme]);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [theme]);
 
   return (
-    <ConfigProvider
-      theme={{
+    <div className='h-screen flex flex-col relative'>
+      <ConfigProvider
+        theme={{
         token: {
           colorPrimary: settings.primaryColor,
         },
-        algorithm: settings.theme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
       }}
-    >
-      <div
-        className="w-full h-screen"
       >
-        {imageFiles.length === 0 ? (
-          <EmptyView />
-        ) : (
-          <ImageList files={imageFiles} />
-        )}
-      </div>
-    </ConfigProvider>
+        <Header />
+        <EmptyView />
+        <ImageList />
+      </ConfigProvider>
+    </div>
   );
 }
 

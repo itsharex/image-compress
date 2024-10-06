@@ -10,3 +10,13 @@ body {
   border-left-style: solid;
   border-right-style: solid;
 }
+
+.scrollbar-y {
+  scrollbar-width: thin;
+  overflow-y: auto;
+  overflow-y: overlay;
+}
+
+.scrollbar-y::-webkit-scrollbar {
+  display: 2px;
+}

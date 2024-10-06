@@ -1,7 +1,9 @@
-import { Button, InputNumber, Modal, Select } from 'antd';
+import { ColorPicker, Form, InputNumber, Modal, Radio } from 'antd';
 import useSettings from '../hooks/useSettings';
 import { themes } from '@/constants';
 import { useState } from 'react';
+import { SettingOutlined } from '@ant-design/icons';
+import { GlobalSettings } from '@/types';
 
 const Settings = () => {
   const [visible, setVisible] = useState(false);
@@ -12,42 +14,58 @@ const Settings = () => {
     changeDefaultQuality,
   } = useSettings();
 
-  // ...
-
   return (
     <>
-      <Button onClick={() => setVisible(true)}>设置</Button>
+      <div className="flex items-center cursor-pointer text-main" onClick={() => setVisible(true)}>
+        <SettingOutlined />
+        <span className='ml-2'>系统设置</span>
+      </div>
       <Modal
-        title="设置"
+        title="系统设置"
         open={visible}
-        onCancel={close}
+        width={400}
+        onCancel={() => setVisible(false)}
         footer={null}
       >
-        <div className="mb-4">
-          <span className="mr-2">主题:</span>
-          <Select
-            value={settings.theme}
-            options={themes as any}
-            onChange={changeTheme}
-          />
-        </div>
-        <div className="mb-4">
-          <span className="mr-2">主题色:</span>
-          <input
-            type="color"
-            value={settings.primaryColor}
-            onChange={e => changePrimaryColor(e.target.value)}
-          />
-        </div>
-        <div>
-          <span className="mr-2">默认压缩质量:</span>
-          <InputNumber
-            min={10}
-            max={100}
-            value={settings.defaultQuality}
-            onChange={changeDefaultQuality}
-          />
-        </div>
+        <Form<GlobalSettings>
+          layout="horizontal"
+          initialValues={settings}
+          labelCol={{ span: 7 }}
+          // onFinish={(values) => {
+          //   changeSettings(values);
+          //   setVisible(false);
+          // }}
+        >
+          <Form.Item
+            name="theme"
+            label="主题"
+          >
+            {/* <Select options={themes as any} /> */}
+            <Radio.Group onChange={(e) => {
+              changeTheme(e.target.value);
+            }}>
+              {themes.map(theme => (
+                <Radio key={theme.value} value={theme.value}>{theme.label}</Radio>
+              ))}
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            name="primaryColor"
+            label="主题色"
+          >
+            <ColorPicker showText onChange={(color) => {
+              changePrimaryColor(color.toHexString());
+            }} />
+          </Form.Item>
+          <Form.Item
+            name="defaultQuality"
+            label="默认压缩质量"
+          >
+            <InputNumber min={10} max={100} suffix='%' onChange={(value) => {
+              changeDefaultQuality(value);
+            }} />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );

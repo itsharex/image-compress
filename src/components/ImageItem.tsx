@@ -1,10 +1,9 @@
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { Select, InputNumber, Checkbox, Spin, ConfigProvider } from 'antd';
+import { Select, InputNumber, Checkbox, ConfigProvider } from 'antd';
 import type { SelectProps } from 'antd';
 import { CompressImage, CompressOptions } from '@/types';
-import { invoke } from '@tauri-apps/api';
 import { formatBytes } from '@/utils';
-import { CheckCircleFilled, ClockCircleFilled, CloseCircleFilled, CloseOutlined, LoadingOutlined, LockOutlined, RightOutlined, UnlockOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, ClockCircleFilled, CloseCircleFilled, CloseOutlined, LoadingOutlined, LockOutlined, RightOutlined, SearchOutlined, UnlockOutlined } from '@ant-design/icons';
 import { getImageExtension } from '@/utils/compress';
 import useSettings from '@/hooks/useSettings';
 
@@ -19,13 +18,11 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
   const { settings } = useSettings()
   const [expanded, setExpanded] = useState(false);
 
-  const [originSize, setOriginSize] = useState<[number, number]>([0, 0]);
-
   const ext = useMemo(() => getImageExtension(file), [file]);
   // 是否显示尺寸调整
   const showSizeChange = useMemo(() => {
-    return !!originSize[0] && !['svg'].includes(ext);
-  }, [ext, originSize]);
+    return !!file.width && !['svg'].includes(ext);
+  }, [ext, file.width]);
   // 可输出的格式
   const formats = useMemo<SelectProps['options']>(() => {
     if (['svg'].includes(ext)) {
@@ -49,7 +46,6 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
     }
   });
   const [keepAspectRatio, setKeepAspectRatio] = useState(true);
-  const [isLoadingSize, setIsLoadingSize] = useState(false);
 
   const toggleExpand = () => setExpanded(!expanded);
 
@@ -60,39 +56,38 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
   const onSizeChange = (field: 'width' | 'height', value: number | null) => {
     let val = value;
     if (val === null) {
-      val = field === 'width' ? originSize[0] : originSize[1];
+      val = file[field]
     }
     if (keepAspectRatio) {
-      setCompressOptions({ ...compressOptions, [field]: value, [field === 'width' ? 'height' : 'width']: Math.round(val * originSize[field === 'width' ? 1 : 0] / originSize[field === 'width' ? 0 : 1 ]) });
+      setCompressOptions({
+        ...compressOptions,
+        [field]: value,
+        [field === 'width' ? 'height' : 'width']: Math.round(val * (field === 'width' ? (file.height / file.width) : (file.width / file.height)))
+      });
     } else {
       setCompressOptions({ ...compressOptions, [field]: value });
     }
   }
 
+  const openInSystemExplorer = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    window.ipcRenderer.invoke('open_in_system_explorer', file.filePath);
+  }
+
+  useEffect(() => {
+    if (expanded && !compressOptions.width) {
+      setCompressOptions(v => ({ ...v, width: file.width, height: file.height }))
+    }
+  }, [expanded])
+
   useEffect(() => {
     onOptionsChange(compressOptions);
   }, [compressOptions])
 
-  useEffect(() => {
-    if (expanded && originSize[0] === 0 && originSize[1] === 0) {
-      setIsLoadingSize(true);
-      invoke('get_image_dimensions', { filePath: file.filePath })
-        .then((res) => {
-          const [width, height] = res as [number, number];
-          setOriginSize([width, height]);
-          setCompressOptions({ ...compressOptions, width, height });
-          setIsLoadingSize(false);
-        })
-        .catch(err => {
-          console.error(err);
-          setIsLoadingSize(false);
-        });
-    }
-  }, [expanded]);
-
   return (
-    <Spin spinning={isLoadingSize}>
-      <div className="flex items-center border-b border-gray-200 border-b-solid divide-x divide-gray-200 divide-x cursor-pointer" onClick={toggleExpand}>
+    <div className='image-item'>
+      <div className="flex items-center border-b border-gray-200 dark:border-gray-600 border-b-solid divide-x divide-gray-200 dark:divide-gray-600 divide-x cursor-pointer" onClick={toggleExpand}>
         <div className="cell w-5">
           {file.compressStatus === 'pending' ? <ClockCircleFilled className='text-gray-500' />
             : file.compressStatus === 'compressing' ? <LoadingOutlined className='text-blue-500' />
@@ -100,17 +95,18 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
             : <CloseCircleFilled className='text-red-500' />
           }
         </div>
-        <div className="cell flex-1 flex items-center overflow-hidden">
+        <div className="cell flex-1 flex items-center overflow-hidden group">
           <RightOutlined className={`mr-1 text-gray-300 ${expanded ? 'rotate-90' : ''}`} />
-          <div className='flex-1 truncate' title={file.fileName}>{file.fileName}</div>
+          <div className='flex-1 truncate mr-2' title={file.fileName}>{file.fileName}</div>
+          <SearchOutlined className='hidden group-hover:inline-block ml-auto' onClick={openInSystemExplorer} />
         </div>
         <div className="cell w-24">{formatBytes(file.fileSize)}</div>
         <div className="cell w-20">
-          {file.compressStatus === 'success' ? formatBytes(file.savedSize) : '　'}
+          {file.compressStatus === 'success' ? (file.savedSize >= 0 ? formatBytes(file.savedSize) : <span className='text-red-500'>-{formatBytes(-file.savedSize)}</span>) : '　'}
         </div>
       </div>
       {expanded && (
-        <div className="flex items-center py-1 text-xs border-b border-gray-200 border-b-solid">
+        <div className="flex items-center py-1 text-xs text-sub border-b border-gray-200 dark:border-gray-600 border-b-solid">
           {showSizeChange && <div className="flex items-center pl-2 pr-4 flex-shrink-0">
             <span className='mr-2'>调整尺寸</span>
             <InputNumber controls={false} className='w-12' size='small' value={compressOptions.width} style={miniStyle}
@@ -148,7 +144,7 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
           </div>
         </div>
       )}
-    </Spin>
+    </div>
   );
 };
 

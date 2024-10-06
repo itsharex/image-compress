@@ -5,6 +5,7 @@ const maxConcurrent = navigator.hardwareConcurrency * 2;
 class TaskQueue {
     private tasks: (() => Promise<void>)[] = [];
     private runningCount: number = 0;
+    public maxConcurrent = maxConcurrent;
 
     public addTask(task: () => Promise<void>): void {
         this.tasks.push(task);

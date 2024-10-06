@@ -1,8 +1,12 @@
+import { Theme } from "./constants";
+
 export type ImageInfo = {
-    fileName: string;
-    filePath: string;
-    fileExtension: string;
-    fileSize: number;
+  fileName: string;
+  filePath: string;
+  fileExtension: string;
+  fileSize: number;
+  width: number;
+  height: number;
 }
 
 export type CompressStatus = 'pending' | 'compressing' | 'success' | 'error';
@@ -15,4 +19,10 @@ export type CompressOptions = {
     formats: string[];
     quality?: number;
     overwrite?: boolean;
+}
+
+export type GlobalSettings = {
+  theme: Theme;
+  primaryColor: string;
+  defaultQuality: number;
 }
