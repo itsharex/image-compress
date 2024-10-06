@@ -1,7 +1,37 @@
-# Tauri + React + Typescript
+# 图片压缩 🖼️
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+一款模仿 ImageOptim 的图片压缩工具 🛠️
 
-## Recommended IDE Setup
+## 简介 📝
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+这是一个使用 Electron 和 Sharp 开发的图片压缩应用程序，专为前端开发者设计，用于批量压缩图片。
+
+## 主要特点 ✨
+
+- 简单易用的界面 🖥️
+- 批量处理图片 📚
+- 高效的压缩算法 🚀
+- 跨平台支持 (Windows, macOS, Linux) 💻
+
+## 使用方法 🔧
+
+1. 打开应用程序
+2. 拖拽图片或文件夹到应用窗口
+3. 选择压缩设置
+4. 点击"开始压缩"按钮
+5. 等待压缩完成，保存结果
+
+## 技术栈 🔨
+
+- Electron: 跨平台桌面应用开发框架
+- Sharp: 高性能图片处理库
+- React: 用户界面开发
+
+## 贡献 🤝
+
+欢迎提交 issues 和 pull requests 来帮助改进这个项目！
+
+## 许可证 📄
+
+本项目采用 MIT 许可证。详情请查看 [LICENSE](LICENSE) 文件。
+
