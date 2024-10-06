@@ -1,27 +1,31 @@
-import { CompressOptions, ImageInfo } from "@/types";
+import type { CompressOptions, ImageInfo } from '@/types'
 
 export function getImageExtension(file: ImageInfo) {
-  let ext = file.fileExtension.toLowerCase();
+  let ext = file.fileExtension.toLowerCase()
   if (ext === 'jpg' || ext === 'jpeg') {
-    ext = 'jpg';
+    ext = 'jpg'
   }
-  return ext;
+  return ext
 }
 
-export function mergeCompressOptions(file: ImageInfo, defaultQuality: number | undefined, options: CompressOptions | undefined) {
-  const ext = getImageExtension(file);
+export function mergeCompressOptions(
+  file: ImageInfo,
+  defaultQuality: number | undefined,
+  options: CompressOptions | undefined
+) {
+  const ext = getImageExtension(file)
   const defaultOptions = {
     formats: [ext],
     quality: defaultQuality || 80,
     overwrite: true,
     width: undefined,
-    height: undefined,
+    height: undefined
   }
   if (options) {
     return {
       ...defaultOptions,
-      ...options,
+      ...options
     }
   }
-  return defaultOptions;
+  return defaultOptions
 }

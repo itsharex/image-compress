@@ -11,33 +11,33 @@ jobs:
 
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        # os: [macos-latest, windows-latest]
         arch: [x64, arm64]
 
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      # - name: Setup Bun
-      #   uses: oven-sh/setup-bun@v2
-
-      # - name: Install dependencies
-      #   run: bun install
-
-      # - name: Build
-      #   run: bun run build
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Build
-        run: pnpm run build
+        run: bun run build
+
+      # - name: Setup pnpm
+      #   uses: pnpm/action-setup@v4
+      #   with:
+      #     version: 9
+
+      # - name: Install dependencies
+      #   run: pnpm install
+
+      # - name: Build
+      #   run: pnpm run build
 
       - name: Release
         uses: softprops/action-gh-release@v2

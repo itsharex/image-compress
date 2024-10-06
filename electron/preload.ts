@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
     const [channel, ...omit] = args
     return ipcRenderer.invoke(channel, ...omit)
-  },
+  }
 
   // You can expose other APTs you need here.
   // ...

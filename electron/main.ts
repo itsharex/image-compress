@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from 'electron'
+import path from 'node:path'
 // import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import { BrowserWindow, app } from 'electron'
 import './commands'
 
 // const require = createRequire(import.meta.url)
@@ -33,9 +33,9 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, 'icon.svg'),
     titleBarStyle: 'hiddenInset',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
+      preload: path.join(__dirname, 'preload.mjs')
       // devTools: !!VITE_DEV_SERVER_URL, // 打开devtool
-    },
+    }
   })
 
   // 启用右键可以打开开发者工具功能

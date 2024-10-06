@@ -1,12 +1,12 @@
 body {
   margin: 0;
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* hack fix */
-.divide-x>:not([hidden])~:not([hidden]) {
+.divide-x > :not([hidden]) ~ :not([hidden]) {
   border-left-style: solid;
   border-right-style: solid;
 }
