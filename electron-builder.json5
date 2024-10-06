@@ -9,6 +9,10 @@
   ],
   "productName": "图片压缩",
   "compression": "maximum",
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
+  },
   "directories": {
     "output": "release/${version}"
   },
