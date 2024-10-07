@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "pkg": "electron-builder",
+    "release": "tsc && vite build && electron-builder --publish always",
     "format": "biome check --apply .",
     "preview": "vite preview"
   },
