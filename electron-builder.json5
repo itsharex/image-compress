@@ -17,10 +17,8 @@
     "dist-electron"
   ],
   "mac": {
-    "target": "dmg",
-    "arch": [
-      "x64",
-      "arm64"
+    "target": [
+      "dmg"
     ],
     "artifactName": "${productName}_${version}_${arch}.${ext}"
   },
