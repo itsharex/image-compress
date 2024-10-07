@@ -3,7 +3,7 @@
   "description": "图片压缩",
   "author": "erguotou525@gmail.com",
   "version": "0.1.2",
-  "private": true,
+  "repository": "https://github.com/erguotou520/image-compress",
   "type": "module",
   "scripts": {
     "dev": "vite",
