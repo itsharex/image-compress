@@ -58,10 +58,13 @@ const ImageList = () => {
         )
         try {
           // 视线滚动
-          if (index > taskQueue.maxConcurrent / 2) {
-            document
-              .querySelector(`.image-item:nth-child(${index - Math.floor(taskQueue.maxConcurrent / 2)})`)
-              ?.scrollIntoView({ behavior: 'smooth' })
+          if (index > 4) {
+            // 在渲染空闲时执行滚动
+            requestIdleCallback(() => {
+              document
+                .querySelector(`.image-item:nth-child(${index})`)
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }, { timeout: 200 })
           }
           const outputSize: number | null = await compressImage(file)
           console.log('res', file.filePath, file.fileSize, outputSize)
@@ -167,9 +170,10 @@ const ImageList = () => {
       <div className="flex items-center mt-5 p-3 text-sm">
         <Settings />
         <div className="ml-auto flex items-center">
-          {totalSavedSize > 0 && <Tooltip className="mr-2" title={(
+          {totalSavedSize > 0 && <Tooltip className="mr-2 text-sub" title={(
             <>
-              <div className="">源文件累计：{formatBytes(totalOriginSize)}</div>
+              <div className="">源文件共 {compressFiles.length} 个， 累计：{formatBytes(totalOriginSize)}</div>
+              <div className="mt-1">有效压缩文件共 {compressFiles.filter(file => file.compressStatus === 'success' && file.savedSize > 0).length} 个</div>
               <div className="mt-1">压缩后文件累计：{formatBytes(totalOriginSize - totalSavedSize)}</div>
               <div className="mt-1">压缩比：{Math.round((totalSavedSize / totalOriginSize) * 10000) / 100}%</div>
             </>
