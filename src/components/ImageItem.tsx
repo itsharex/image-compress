@@ -122,7 +122,8 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
           <SearchOutlined className="hidden group-hover:inline-block ml-auto" onClick={openInSystemExplorer} />
         </div>
         <div className="cell w-24">{formatBytes(file.fileSize)}</div>
-        <div className="cell w-20">
+        <div className="cell w-22">{formatBytes(file.fileSize - file.savedSize)}</div>
+        <div className="cell w-22">
           {file.compressStatus === 'success' ? (
             file.savedSize >= 0 ? (
               formatBytes(file.savedSize)

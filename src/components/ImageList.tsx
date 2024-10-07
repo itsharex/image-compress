@@ -4,10 +4,11 @@ import type { CompressImage, CompressOptions, ImageInfo } from '@/types'
 import { formatBytes } from '@/utils'
 import { mergeCompressOptions } from '@/utils/compress'
 import TaskQueue from '@/utils/queue'
-import { Dropdown, message } from 'antd'
-import { useEffect, useRef, useState } from 'react'
+import { Dropdown, message, Tooltip } from 'antd'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import ImageItem from './ImageItem'
 import Settings from './Settings'
+import { QuestionCircleOutlined } from '@ant-design/icons'
 
 const ImageList = () => {
   const [msg, contextHolder] = message.useMessage()
@@ -130,6 +131,8 @@ const ImageList = () => {
     }
   }
 
+  const totalOriginSize = useMemo(() => compressFiles.reduce((acc, file) => acc + file.fileSize, 0), [compressFiles])
+
   useEffect(() => {
     const overHandler = (e: DragEvent) => e.preventDefault()
     document.addEventListener('dragover', overHandler)
@@ -148,7 +151,8 @@ const ImageList = () => {
           <div className="cell w-5"></div>
           <div className="cell flex-1">文件名</div>
           <div className="cell w-24">压缩前</div>
-          <div className="cell w-20">节省</div>
+          <div className="cell w-22">压缩后</div>
+          <div className="cell w-22">节省</div>
         </div>
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           {compressFiles.map(file => (
@@ -163,7 +167,18 @@ const ImageList = () => {
       <div className="flex items-center mt-5 p-3 text-sm">
         <Settings />
         <div className="ml-auto flex items-center">
-          {totalSavedSize > 0 && <span className="mr-2">本次累积节省：{formatBytes(totalSavedSize)}</span>}
+          {totalSavedSize > 0 && <Tooltip className="mr-2" title={(
+            <>
+              <div className="">源文件累计：{formatBytes(totalOriginSize)}</div>
+              <div className="mt-1">压缩后文件累计：{formatBytes(totalOriginSize - totalSavedSize)}</div>
+              <div className="mt-1">压缩比：{Math.round((totalSavedSize / totalOriginSize) * 10000) / 100}%</div>
+            </>
+          )}>
+            <span className='cursor-help'>
+              <QuestionCircleOutlined className='mr-1' />
+              本次累计节省：{formatBytes(totalSavedSize)}
+            </span>
+          </Tooltip>}
           <Dropdown.Button
             className="w-[min-content]"
             menu={{
