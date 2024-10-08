@@ -17,11 +17,12 @@
 
 ## 使用方法 🔧
 
-1. 打开应用程序
-2. 拖拽图片或文件夹到应用窗口
-3. 选择压缩设置
-4. 点击"开始压缩"按钮
-5. 等待压缩完成，保存结果
+1. 从 [Release](https://github.com/erguotou520/image-compress/releases) 下载当前操作系统的最新版本
+2. 打开应用程序（应用未签名，所以可能会遇到无法打开等问题，Mac 需要允许从非 App Store 安装应用并执行`sudo xattr -dr com.apple.quarantine /Applications/image-compress.app`，或者本地编译尝试）
+3. 拖拽图片或文件夹到应用窗口
+4. 选择压缩设置
+5. 点击"开始压缩"按钮
+6. 等待压缩完成，保存结果
 
 ## 技术栈 🔨
 
