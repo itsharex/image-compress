@@ -38,12 +38,16 @@ const ImageItem = ({ file, onOptionsChange }: ImageItemProps) => {
     if (['svg'].includes(ext)) {
       return [{ value: 'svg', label: 'SVG' }]
     }
-    return [
+    const base = [
       { value: 'jpg', label: 'JPEG' },
       { value: 'png', label: 'PNG' },
       { value: 'webp', label: 'WebP' }
       // { value: 'avif', label: 'AVIF' },
     ]
+    if (['gif'].includes(ext)) {
+      return [{ value: 'gif', label: 'GIF' }, ...base]
+    }
+    return base
   }, [ext])
 
   const [compressOptions, setCompressOptions] = useState<CompressOptions>(() => {

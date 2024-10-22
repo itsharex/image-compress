@@ -23,7 +23,7 @@ interface CompressOptions {
 }
 
 // 受支持的图片格式列表
-const SUPPORTED_IMAGE_FORMATS = ['png', 'jpg', 'jpeg', 'svg', 'webp']
+const SUPPORTED_IMAGE_FORMATS = ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif']
 
 // 获取图片信息
 async function getImageInfoFromPath(filePath: string): Promise<ImageInfo | null> {
@@ -126,7 +126,7 @@ ipcMain.handle('compress_image', async (_event, filePath: string, options: Compr
         outputSize = size
       }
     } else if (format === 'webp') {
-      const task = image.clone()
+      const task = extension === 'gif' ? sharp(filePath, { animated: true, limitInputPixels: false, pages: -1 }) : image.clone()
       task.webp({
         quality: options.quality || 80
       })
@@ -137,6 +137,23 @@ ipcMain.handle('compress_image', async (_event, filePath: string, options: Compr
         getOutputPath(filePath, format, options.overwrite ?? false, outputDir)
       )
       if (extension === 'webp') {
+        outputSize = size
+      }
+    } else if (format === 'gif') {
+      const task = sharp(filePath, { animated: true, limitInputPixels: false, pages: -1 })
+      const metadata = await task.metadata()
+      task.gif({
+        reuse: true,
+        loop: metadata.loop,
+        delay: metadata.delay,
+      })
+      // 导出
+      const size = await writeImageResult(
+        task,
+        sourceSize,
+        getOutputPath(filePath, format, options.overwrite ?? false, outputDir)
+      )
+      if (extension === 'gif') {
         outputSize = size
       }
     } else if (format === 'svg') {
@@ -156,7 +173,7 @@ ipcMain.handle('compress_image', async (_event, filePath: string, options: Compr
       }
     }
   }
-  return outputSize
+  return outputSize || sourceSize
 })
 
 function getOutputPath(filePath: string, ext: string | null, overwrite: boolean, outputDir?: string) {
@@ -169,11 +186,11 @@ function getOutputPath(filePath: string, ext: string | null, overwrite: boolean,
 
   if (!overwrite) {
     const parsedPath = path.parse(outputPath)
-    outputPath = path.join(parsedPath.dir, `${parsedPath.name}-compress.${parsedPath.ext}`)
+    outputPath = path.join(parsedPath.dir, `${parsedPath.name}-compressed.${parsedPath.ext}`)
 
     while (fsSync.existsSync(outputPath)) {
       const randomStr = Math.random().toString(36).substring(2, 8)
-      outputPath = path.join(parsedPath.dir, `${parsedPath.name}-compress-${randomStr}.${parsedPath.ext}`)
+      outputPath = path.join(parsedPath.dir, `${parsedPath.name}-compressed-${randomStr}.${parsedPath.ext}`)
     }
   }
 
