@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        arch: [x64, arm64]
 
     steps:
       - name: Check out Git repository
@@ -27,6 +26,6 @@ jobs:
         run: bun install
 
       - name: Release
-        run: bun run release -- --platform ${{ matrix.os }} --arch ${{ matrix.arch }}
+        run: bun run release
         env:
           GH_TOKEN: ${{ secrets.github_token }}
