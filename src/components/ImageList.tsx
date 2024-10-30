@@ -4,11 +4,11 @@ import type { CompressImage, CompressOptions, ImageInfo } from '@/types'
 import { formatBytes } from '@/utils'
 import { mergeCompressOptions } from '@/utils/compress'
 import TaskQueue from '@/utils/queue'
-import { Dropdown, message, Tooltip } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Dropdown, Tooltip, message } from 'antd'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ImageItem from './ImageItem'
 import Settings from './Settings'
-import { QuestionCircleOutlined } from '@ant-design/icons'
 
 const ImageList = () => {
   const [msg, contextHolder] = message.useMessage()
@@ -151,20 +151,22 @@ const ImageList = () => {
       {contextHolder}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center border-y border-gray-200 dark:border-gray-600 dark:border-gray-200 dark:border-gray-600 border-y-solid divide-x divide-gray-200 dark:divide-gray-600 dark:divide-gray-200 dark:divide-gray-600 divide-x">
-          <div className="cell w-5"></div>
+          <div className="cell w-5" />
           <div className="cell flex-1">文件名</div>
           <div className="cell w-24">压缩前</div>
           <div className="cell w-22">压缩后</div>
           <div className="cell w-22">节省</div>
         </div>
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {compressFiles.map(file => (
-            <ImageItem
-              key={file.filePath}
-              file={file}
-              onOptionsChange={opt => compressOptionsMap.current.set(file.filePath, opt)}
-            />
-          ))}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className='w-screen'>
+            {compressFiles.map(file => (
+              <ImageItem
+                key={file.filePath}
+                file={file}
+                onOptionsChange={opt => compressOptionsMap.current.set(file.filePath, opt)}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex items-center mt-5 p-3 text-sm">

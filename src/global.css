@@ -10,13 +10,10 @@ body {
   border-left-style: solid;
   border-right-style: solid;
 }
-
-.scrollbar-y {
-  scrollbar-width: thin;
-  overflow-y: auto;
-  overflow-y: overlay;
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: transparent;
 }
-
-.scrollbar-y::-webkit-scrollbar {
-  display: 2px;
+::-webkit-scrollbar-thumb {
+  background-color: #999;
 }

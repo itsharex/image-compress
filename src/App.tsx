@@ -27,9 +27,8 @@ function App() {
       return () => {
         mediaQuery.removeEventListener('change', handleSystemThemeChange)
       }
-    } else {
-      setTheme(settings.theme)
     }
+    setTheme(settings.theme)
   }, [settings.theme])
 
   useEffect(() => {
