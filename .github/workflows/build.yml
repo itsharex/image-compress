@@ -27,6 +27,6 @@ jobs:
         run: bun install
 
       - name: Release
-        run: bun run release
+        run: bun run release -- --platform ${{ matrix.os }} --arch ${{ matrix.arch }}
         env:
           GH_TOKEN: ${{ secrets.github_token }}
